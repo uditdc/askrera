@@ -1,0 +1,22 @@
+{
+	"name": "askrera",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"format": "prettier --check .",
+		"format:fix": "prettier --write ."
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"prettier": "^3.8.1"
+	}
+}

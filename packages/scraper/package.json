@@ -1,0 +1,23 @@
+{
+	"name": "@askrera/scraper",
+	"version": "1.0.0",
+	"main": "src/cli.ts",
+	"module": "src/cli.ts",
+	"type": "module",
+	"scripts": {
+		"start": "bun src/cli.ts",
+		"start:daily": "bun src/cli.ts --mode daily",
+		"start:full": "bun src/cli.ts --mode full",
+		"test": "vitest run",
+		"test:scrape": "bun src/cli.ts --mode test"
+	},
+	"dependencies": {
+		"@askrera/db": "workspace:*",
+		"@prisma/client": "^6.0.0",
+		"cheerio": "^1.2.0",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"vitest": "^4.0.18"
+	}
+}

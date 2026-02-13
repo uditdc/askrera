@@ -1,0 +1,13 @@
+{
+	"name": "@askrera/db",
+	"version": "1.0.0",
+	"main": "src/index.ts",
+	"module": "src/index.ts",
+	"type": "module",
+	"dependencies": {
+		"@prisma/client": "^6.1.0"
+	},
+	"devDependencies": {
+		"prisma": "^6.0.0"
+	}
+}

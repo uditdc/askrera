@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ProjectListing {
+  id               Int      @id @default(autoincrement())
+  reraId           String   @unique @map("rera_id")
+  projectName      String   @map("project_name")
+  developer        String?
+  locationTaluka   String?  @map("location_taluka")
+  district         String?
+  pincode          String?
+  lastModified     DateTime? @map("last_modified") @db.Date
+  internalId       Int?     @map("internal_id")
+  hasExtensionCert Boolean  @default(false) @map("has_extension_cert")
+  scrapedAt        DateTime @default(now()) @map("scraped_at")
+  detailScrapedAt  DateTime? @map("detail_scraped_at")
+
+  @@map("projects_listing")
+}
+
+model Developer {
+  id            Int       @id @default(autoincrement())
+  canonicalName String    @unique @map("canonical_name")
+  aliases       String[]
+  createdAt     DateTime  @default(now()) @map("created_at")
+  projects      Project[]
+
+  @@map("developers")
+}
+
+model Project {
+  id                   Int       @id @default(autoincrement())
+  internalId           Int       @unique @map("internal_id")
+  reraId               String    @unique @map("rera_id")
+  developerId          Int?      @map("developer_id")
+  developer            Developer? @relation(fields: [developerId], references: [id])
+  name                 String
+  projectType          String?   @map("project_type")
+  currentStatus        String?   @map("current_status")
+  statusName           String?   @map("status_name")
+  district             String?
+  taluka               String?
+  pincode              String?
+  originalCompletion   DateTime? @map("original_completion")
+  proposedCompletion   DateTime? @map("proposed_completion")
+  registrationDate     DateTime? @map("registration_date")
+  applicationDate      DateTime? @map("application_date")
+  certGenerationDate   DateTime? @map("cert_generation_date")
+  ackNumber            String?   @map("ack_number")
+  totalUnits           Int?      @map("total_units")
+  soldUnits            Int?      @map("sold_units")
+  feesPayable          Float?    @map("fees_payable")
+  grossFees            Float?    @map("gross_fees")
+  isMigrated           Boolean   @default(false) @map("is_migrated")
+  isLapsed             Boolean   @default(false) @map("is_lapsed")
+  isBuilding           Boolean   @default(false) @map("is_building")
+  certDmsRef           String?   @map("cert_dms_ref")
+  extensionCertRef     String?   @map("extension_cert_ref")
+  promoterTypeId       Int?      @map("promoter_type_id")
+  locationId           Int?      @map("location_id")
+  lastModifiedListing  DateTime? @map("last_modified_listing")
+  lastSynced           DateTime  @default(now()) @map("last_synced")
+  rawApiResponse       Json?     @map("raw_api_response")
+
+  filings              Filing[]
+  litigations          Litigation[]
+  redFlags             RedFlag[]
+
+  @@map("projects")
+}
+
+model Filing {
+  id            Int      @id @default(autoincrement())
+  projectId     Int      @map("project_id")
+  project       Project  @relation(fields: [projectId], references: [id])
+  filingType    String   @map("filing_type")
+  filingDate    DateTime? @map("filing_date")
+  localPath     String?  @map("local_path")
+  dmsRef        String?  @map("dms_ref")
+  extractedData Json?    @map("extracted_data")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([projectId, dmsRef], name: "projectId_dmsRef")
+  @@map("filings")
+}
+
+model Litigation {
+  id         Int       @id @default(autoincrement())
+  projectId  Int       @map("project_id")
+  project    Project   @relation(fields: [projectId], references: [id])
+  caseNumber String?   @map("case_number")
+  filingDate DateTime? @map("filing_date")
+  status     String?
+  summary    String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@unique([projectId, caseNumber], name: "projectId_caseNumber")
+  @@map("litigations")
+}
+
+model RedFlag {
+  id         Int       @id @default(autoincrement())
+  projectId  Int       @map("project_id")
+  project    Project   @relation(fields: [projectId], references: [id])
+  flagType   String    @map("flag_type")
+  detectedAt DateTime  @default(now()) @map("detected_at")
+  resolvedAt DateTime? @map("resolved_at")
+
+  @@map("red_flags")
+}
